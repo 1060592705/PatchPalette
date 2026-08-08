@@ -57,3 +57,44 @@
 
 **下一步**：开发分类管理 CRUD（创建/编辑/删除分类，关联 Dexie.js 真实数据）
 
+---
+
+### 2026-08-09 — 会话 #3：分类管理 CRUD
+
+**时间段**：下午
+
+**本步目标**：
+- 分类的增删改查全部接入 Dexie.js 真实数据库
+- 支持拍照/选图做封面
+- 底部弹出表单（移动端友好）
+- 显示每个分类下的教程数量
+
+**实际做了什么**：
+1. 创建 `src/hooks/useCategories.ts`：
+   - `load()` 从 Dexie.js 按创建时间倒序加载
+   - `add()` 新增分类（自动加入 createdAt 时间戳）
+   - `update()` 编辑分类（部分字段更新）
+   - `remove()` 删除分类，同时级联删除该分类下的所有教程
+2. 创建 `src/components/CategoryForm.tsx`：
+   - 底部弹出式模态框（animate-slide-up 动画）
+   - 封面图：点击方框 → 调起相机/相册 → FileReader 转 base64 存储
+   - 名称（必填）+ 描述（选填）
+   - 支持新建和编辑两种模式（通过 initial prop 区分）
+3. 重写 `src/pages/InspirationPage.tsx`：
+   - 使用 `useCategories()` Hook 替代 Mock 数据
+   - 空态引导（无分类时显示占位提示）
+   - 每个分类卡片实时显示教程数量（从 tutorials 表 count）
+   - 桌面端 hover 显示删除按钮，移动端长按
+   - 点击封面 → 编辑该分类
+4. `src/index.css`：添加 slide-up 关键帧动画
+5. TypeScript 类型检查通过（零错误）
+
+**关键代码位置**：
+- 数据操作：`src/hooks/useCategories.ts`
+- 表单组件：`src/components/CategoryForm.tsx`
+- 页面展示：`src/pages/InspirationPage.tsx`
+
+**当前状态**：分类 CRUD 完成，可在应用中创建/编辑/删除分类，封面图以 base64 存入 IndexedDB
+
+**下一步**：开发布料库功能（多标签系统 + 尺寸 + 图片 + 购买链接）
+
