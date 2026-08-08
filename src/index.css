@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+/* PatchPalette — custom base styles */
+body {
+  margin: 0;
+}
+
+#root {
+  min-height: 100dvh;
+}
