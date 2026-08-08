@@ -139,3 +139,57 @@
 
 **下一步**：第一期联调测试，或进入教程收集功能（分类下添加教程条目）
 
+---
+
+### 2026-08-09 — 会话 #5：教程收集功能
+
+**时间段**：下午
+
+**本步目标**：
+- 分类下添加教程条目（增删改查）
+- 教程链接（小红书/抖音/其他）+ 纸样编号
+- 包包各面尺寸（自定义面名称 + 宽×高 + 可选关联布料）
+- App 导航支持进入分类详情 → 返回
+
+**实际做了什么**：
+1. 更新 `src/App.tsx`：
+   - 新增 View 类型导航系统：`tabs` ↔ `category-detail`
+   - `navigateToCategory(categoryId, categoryName)` 推入分类详情
+   - `goBack()` 返回 Tab 页面
+   - 进入分类详情时隐藏底部 TabBar（全屏沉浸）
+2. 更新 `src/pages/InspirationPage.tsx`：
+   - 接收 `onCategoryClick` prop
+   - 点击封面或名称 → 导航到分类详情
+   - 新增 ✎ 编辑按钮（每个卡片右上角）
+   - 删除按钮保持 hover 显示
+3. 创建 `src/hooks/useTutorials.ts`：
+   - 按 categoryId 过滤 + 按 createdAt 倒序
+   - 标准 CRUD：add / update / remove / load
+4. 创建 `src/components/TutorialForm.tsx`（最复杂的表单）：
+   - 标题（必填）+ 描述 + 纸样编号
+   - 多图：拍照/选图 → 缩略图预览 → 点击 × 删除
+   - 多链接：平台下拉（小红书/抖音/其他）+ URL 输入 + 删除，可添加多条
+   - 多尺寸面：面名称 + 宽高数值 + 可选布料下拉（从布料库实时加载）
+   - 所有动态列表支持增删
+5. 创建 `src/pages/CategoryDetailPage.tsx`：
+   - 顶部：← 返回 + 分类名 + 添加按钮
+   - 教程列表：卡片式，点击展开/收起
+   - 收起态：缩略图 + 标题 + 链接数 + 面数 + 纸样编号
+   - 展开态：描述 + 图片横滑 + 链接（可点击跳转）+ 尺寸表 + 编辑/删除按钮
+   - 空态引导
+   - 链接点击 → `window.open` 跳转（小红书/抖音会唤起对应 App）
+6. TypeScript 类型检查通过（零错误）
+
+**关键代码位置**：
+- 导航系统：`src/App.tsx`
+- 教程列表：`src/pages/CategoryDetailPage.tsx`
+- 教程表单：`src/components/TutorialForm.tsx`
+- 数据操作：`src/hooks/useTutorials.ts`
+
+**当前状态**：第一期 MVP 核心功能全部完成
+  - ✅ 分类管理（CRUD + 封面图）
+  - ✅ 教程收集（多链接 + 多图 + 纸样 + 尺寸 + 关联布料）
+  - ✅ 布料库（多标签 + 尺寸 + 拍照 + 搜索）
+
+**下一步**：第一期联调测试（在浏览器中跑起来，验证全流程）
+

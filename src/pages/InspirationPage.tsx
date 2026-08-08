@@ -3,13 +3,16 @@ import { useCategories } from '../hooks/useCategories'
 import { db, type Category } from '../db/database'
 import CategoryForm from '../components/CategoryForm'
 
-export default function InspirationPage() {
+interface Props {
+  onCategoryClick: (categoryId: number, categoryName: string) => void
+}
+
+export default function InspirationPage({ onCategoryClick }: Props) {
   const { categories, loading, add, update, remove } = useCategories()
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<Category | null>(null)
   const [tutorialCounts, setTutorialCounts] = useState<Record<number, number>>({})
 
-  // Load tutorial counts per category
   useEffect(() => {
     async function loadCounts() {
       const counts: Record<number, number> = {}
@@ -40,9 +43,7 @@ export default function InspirationPage() {
 
   if (loading) {
     return (
-      <div className="p-4 flex items-center justify-center h-40 text-gray-400 text-sm">
-        加载中...
-      </div>
+      <div className="p-4 flex items-center justify-center h-40 text-gray-400 text-sm">加载中...</div>
     )
   }
 
@@ -67,25 +68,35 @@ export default function InspirationPage() {
       ) : (
         <div className="grid grid-cols-2 gap-3">
           {categories.map((cat) => (
-            <div
-              key={cat.id}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group"
-            >
-              {/* Cover */}
-              <div
+            <div key={cat.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group">
+              {/* Cover — tap to enter */}
+              <button
                 className="w-full h-24 bg-gray-100 flex items-center justify-center text-3xl overflow-hidden"
-                onClick={() => { setEditing(cat); setShowForm(true) }}
+                onClick={() => { if (cat.id != null) onCategoryClick(cat.id, cat.name) }}
               >
                 {cat.coverImage ? (
                   <img src={cat.coverImage} alt="" className="w-full h-full object-cover" />
                 ) : (
                   <span>📁</span>
                 )}
-              </div>
+              </button>
 
               {/* Info */}
               <div className="p-3">
-                <h3 className="font-medium text-gray-800 text-sm truncate">{cat.name}</h3>
+                <div className="flex items-center justify-between">
+                  <h3
+                    className="font-medium text-gray-800 text-sm truncate flex-1 cursor-pointer"
+                    onClick={() => { if (cat.id != null) onCategoryClick(cat.id, cat.name) }}
+                  >
+                    {cat.name}
+                  </h3>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setEditing(cat); setShowForm(true) }}
+                    className="text-gray-300 hover:text-indigo-500 text-xs ml-1 shrink-0"
+                  >
+                    ✎
+                  </button>
+                </div>
                 <div className="flex items-center justify-between mt-1">
                   <p className="text-xs text-gray-400">
                     {cat.id != null ? (tutorialCounts[cat.id] ?? 0) : 0} 个教程
@@ -103,7 +114,6 @@ export default function InspirationPage() {
         </div>
       )}
 
-      {/* Form Modal */}
       {showForm && (
         <CategoryForm
           initial={
